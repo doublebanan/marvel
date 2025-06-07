@@ -1,0 +1,12 @@
+{
+    "editor.tokenColorCustomizations": {
+        "textMateRules": [
+            {
+                "scope": "variable.language.this",
+                "settings": {
+                    "foreground": "#FFD700" // золотой цвет
+                }
+            }
+        ]
+    }
+}
