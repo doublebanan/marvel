@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import PropTypes from "prop-types";
-import MarvelService from "../../services/MarvelService";
+import useMarvelService from "../../services/MarvelService";
 import Spinner from "../spiner/Spinner";
 import Error from "../error/Error";
 
@@ -8,33 +8,20 @@ import "./charList.scss";
 
 const CharList = (props) => {
     const [chars, setChar] = useState([]),
-        [loading, setLoading] = useState(true),
-        [error, setError] = useState(false),
         [newItemLoading, setNewItemLoading] = useState(false),
         [offset, setOffset] = useState(0);
     const [charEnded, setCharEnded] = useState(false);
 
-    const marvelService = new MarvelService();
+    const { loading, error, getAllCharacters } = useMarvelService();
 
     useEffect(() => {
-        onRequest();
+        onRequest(offset, true);
     }, []);
 
-    const onRequest = (offset = 0) => {
-        onCharListLoading();
-        marvelService
-            .getAllCharacters(offset)
-            .then(onCharLoaded)
-            .catch(onError);
-    };
+    const onRequest = (offset = 0, initial) => {
+        initial ? setNewItemLoading(false) : setNewItemLoading(true);
 
-    const onCharListLoading = () => {
-        setNewItemLoading(true);
-    };
-
-    const onError = () => {
-        setLoading(false);
-        setError(true);
+        getAllCharacters(offset).then(onCharLoaded);
     };
 
     const onCharLoaded = (newChars) => {
@@ -44,7 +31,7 @@ const CharList = (props) => {
         }
 
         setChar((chars) => [...chars, ...newChars]);
-        setLoading(false);
+
         setNewItemLoading(false);
         setOffset((offset) => offset + 9);
         setCharEnded(ended);
@@ -93,15 +80,12 @@ const CharList = (props) => {
 
     const items = onChar(chars);
     const errorMessage = error ? <Error /> : null;
-    const spinner = loading ? <Spinner /> : null;
-    const content = !(loading || error) ? items : null;
+    const spinner = loading && !newItemLoading ? <Spinner /> : null;
 
     return (
         <div className="char__list">
             {errorMessage}
-
-            {content}
-
+            {items}
             {spinner}
             <button
                 onClick={() => onRequest(offset)}

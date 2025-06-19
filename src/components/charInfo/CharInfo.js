@@ -4,29 +4,21 @@ import PropTypes from "prop-types";
 import Spinner from "../spiner/Spinner";
 import Error from "../error/Error";
 import Skeleton from "../skeleton/Skeleton";
-import MarvelService from "../../services/MarvelService";
+import useMarvelService from "../../services/MarvelService";
 
 import "./charInfo.scss";
 
 const CharInfo = (props) => {
     const [char, setChar] = useState(null);
-    const [loading, setLoading] = useState(false);
-    const [error, setError] = useState(false);
+
+    const { loading, error, getCharacter } = useMarvelService();
 
     useEffect(() => {
         updateChar();
     }, [props.charId]);
 
-    const marvelService = new MarvelService();
-
     const onCharLoaded = (char) => {
         setChar(char);
-        setLoading(false);
-    };
-
-    const onError = () => {
-        setLoading(false);
-        setError(true);
     };
 
     const updateChar = () => {
@@ -34,8 +26,8 @@ const CharInfo = (props) => {
         if (!charId) {
             return;
         }
-        setLoading(true);
-        marvelService.getCharacter(charId).then(onCharLoaded).catch(onError);
+
+        getCharacter(charId).then(onCharLoaded);
     };
 
     const skeleton = char || loading || error ? null : <Skeleton />,

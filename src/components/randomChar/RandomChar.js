@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import MarvelService from "../../services/MarvelService";
+import useMarvelService from "../../services/MarvelService";
 import Spinner from "../spiner/Spinner";
 import Error from "../error/Error";
 
@@ -8,11 +8,9 @@ import "./randomChar.scss";
 import mjolnir from "../../resources/img/mjolnir.png";
 
 const RandomChar = () => {
-    const [char, setChar] = useState({}),
-        [loading, setLoading] = useState(true),
-        [error, setError] = useState(false);
+    const [char, setChar] = useState({});
 
-    const marvelService = new MarvelService();
+    const { loading, error, getCharacter, clearError } = useMarvelService();
 
     useEffect(() => {
         updateChar();
@@ -22,18 +20,12 @@ const RandomChar = () => {
 
     const onCharLoaded = (char) => {
         setChar(char);
-        setLoading(false);
-    };
-
-    const onError = () => {
-        setLoading(false);
-        setError(true);
     };
 
     const updateChar = () => {
-        setLoading(true);
+        clearError();
         const id = Math.floor(Math.random() * (20 - 1) + 1);
-        marvelService.getCharacter(id).then(onCharLoaded).catch(onError);
+        getCharacter(id).then(onCharLoaded);
     };
 
     const errorMessage = error ? <Error /> : null;
@@ -70,6 +62,8 @@ const RandomChar = () => {
 };
 
 const View = ({ char }) => {
+    if (!char) return null;
+
     const { name, description, thumbnail, homepage, wiki } = char;
 
     const isImageNotAvailable =
