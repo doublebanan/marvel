@@ -2,9 +2,14 @@
     "editor.tokenColorCustomizations": {
         "textMateRules": [
             {
-                "scope": "variable.language.this",
+                "scope": [
+                    "variable.language.this",
+                    "entity.name.tag.jsx", // Имена компонентов в JSX
+                    "support.class.component.js", // Классовые компоненты
+                    "support.class.component.jsx"
+                ],
                 "settings": {
-                    "foreground": "#FFD700" // золотой цвет
+                    "foreground": "#20B2AA"
                 }
             }
         ]
